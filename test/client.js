@@ -4,6 +4,7 @@ var config = require('./config.json');
 
 var analytics = new Analytics(config.HOST);
 var DBNAME = 'test-client';
+var FAKE_DBNAME = 'test-client2';
 var params = {
     "start": new Date(2000, 0, 1),
     "end": new Date()
@@ -16,13 +17,12 @@ var intervalParams = {
 
 describe('analytics.delete()', function () {
     it('should delete a DB, wheter it exists or not', function(done) {
-        analytics.delete(DBNAME)
+        return analytics.delete(DBNAME)
         .then(function() {
             done();
         }, function(err) {
-            var a = new should.Assertion(err);
-            a.params = { operator: 'not to happen' };
-            a.fail();
+            err = err || new Error();
+            done(err);
         });
     });
 });
@@ -50,9 +50,8 @@ describe('analytics.push()', function () {
         .then(function() {
             done();
         }, function(err) {
-            var a = new should.Assertion(err);
-            a.params = { operator: 'not to happen' };
-            a.fail();
+            err = err || new Error();
+            done(err);
         });
     });
 
@@ -79,9 +78,8 @@ describe('analytics.push()', function () {
         .then(function() {
             done();
         }, function(err) {
-            var a = new should.Assertion(err);
-            a.params = { operator: 'not to happen' };
-            a.fail();
+            err = err || new Error();
+            done(err);
         });
     });
 });
@@ -93,9 +91,8 @@ describe('analytics.list()', function () {
             (analytics.list.length).should.be.exactly(2);
             done();
         }, function(err) {
-            var a = new should.Assertion(err);
-            a.params = { operator: 'not to happen' };
-            a.fail();
+            err = err || new Error();
+            done(err);
         });
     });
 
@@ -105,9 +102,18 @@ describe('analytics.list()', function () {
             (analytics.list.length).should.be.exactly(1);
             done();
         }, function(err) {
-            var a = new should.Assertion(err);
-            a.params = { operator: 'not to happen' };
-            a.fail();
+            err = err || new Error();
+            done(err);
+        });
+    });
+
+    it('should fail when querying an inexistant DB', function(done) {
+        analytics.list(FAKE_DBNAME, params)
+        .then(function(analytics) {
+            e = new Error();
+            done(e);
+        }, function(err) {
+            done();
         });
     });
 });
@@ -119,9 +125,8 @@ describe('analytics.byCountries()', function () {
             (analytics.list.length).should.be.exactly(2);
             done();
         }, function(err) {
-            var a = new should.Assertion(err);
-            a.params = { operator: 'not to happen' };
-            a.fail();
+            err = err || new Error();
+            done(err);
         });
     });
 
@@ -132,9 +137,8 @@ describe('analytics.byCountries()', function () {
             (analytics.list[0]).should.containEql({ 'id': 'gb' });
             done();
         }, function(err) {
-            var a = new should.Assertion(err);
-            a.params = { operator: 'not to happen' };
-            a.fail();
+            err = err || new Error();
+            done(err);
         });
     });
 });
@@ -146,9 +150,8 @@ describe('analytics.byPlatforms()', function () {
             (analytics.list.length).should.be.exactly(2);
             done();
         }, function(err) {
-            var a = new should.Assertion(err);
-            a.params = { operator: 'not to happen' };
-            a.fail();
+            err = err || new Error();
+            done(err);
         });
     });
 
@@ -159,9 +162,8 @@ describe('analytics.byPlatforms()', function () {
             (analytics.list[0]).should.containEql({ 'id': 'Mac' });
             done();
         }, function(err) {
-            var a = new should.Assertion(err);
-            a.params = { operator: 'not to happen' };
-            a.fail();
+            err = err || new Error();
+            done(err);
         });
     });
 });
@@ -173,9 +175,8 @@ describe('analytics.byDomains()', function () {
             (analytics.list.length).should.be.exactly(2);
             done();
         }, function(err) {
-            var a = new should.Assertion(err);
-            a.params = { operator: 'not to happen' };
-            a.fail();
+            err = err || new Error();
+            done(err);
         });
     });
 
@@ -186,9 +187,8 @@ describe('analytics.byDomains()', function () {
             (analytics.list[0]).should.containEql({ 'id': 'gitbook.com' });
             done();
         }, function(err) {
-            var a = new should.Assertion(err);
-            a.params = { operator: 'not to happen' };
-            a.fail();
+            err = err || new Error();
+            done(err);
         });
     });
 });
@@ -200,9 +200,8 @@ describe('analytics.byEvents()', function () {
             (analytics.list.length).should.be.exactly(2);
             done();
         }, function(err) {
-            var a = new should.Assertion(err);
-            a.params = { operator: 'not to happen' };
-            a.fail();
+            err = err || new Error();
+            done(err);
         });
     });
 
@@ -213,9 +212,8 @@ describe('analytics.byEvents()', function () {
             (analytics.list[0]).should.containEql({ 'id': 'pdf' });
             done();
         }, function(err) {
-            var a = new should.Assertion(err);
-            a.params = { operator: 'not to happen' };
-            a.fail();
+            err = err || new Error();
+            done(err);
         });
     });
 });
@@ -227,9 +225,8 @@ describe('analytics.overTime()', function () {
             (analytics.list.length).should.be.exactly(2);
             done();
         }, function(err) {
-            var a = new should.Assertion(err);
-            a.params = { operator: 'not to happen' };
-            a.fail();
+            err = err || new Error();
+            done(err);
         });
     });
 
@@ -246,9 +243,8 @@ describe('analytics.overTime()', function () {
 
             done();
         }, function(err) {
-            var a = new should.Assertion(err);
-            a.params = { operator: 'not to happen' };
-            a.fail();
+            err = err || new Error();
+            done(err);
         });
     });
 
@@ -263,9 +259,8 @@ describe('analytics.overTime()', function () {
 
             done();
         }, function(err) {
-            var a = new should.Assertion(err);
-            a.params = { operator: 'not to happen' };
-            a.fail();
+            err = err || new Error();
+            done(err);
         });
     });
 });
