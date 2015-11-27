@@ -1,0 +1,39 @@
+{
+    "name": "node-analytics",
+    "version": "0.0.1",
+    "private": false,
+    "homepage": "https://www.github.com/GitbookIO/node-analytics",
+    "description": "Node client for µAnalytics",
+    "author": "GitBook Team <contact@gitbook.com>",
+    "bugs": {
+        "url": "https://github.com/GitbookIO/node-analytics/issues"
+    },
+    "engines": {
+        "node": "5.1.0",
+        "npm": "3.4.1"
+    },
+    "dependencies": {
+        "axios": "0.7.0",
+        "lodash": "3.10.1",
+        "q": "1.4.1",
+        "urljoin.js": "0.1.0"
+    },
+    "devDependencies": {
+        "dotenv": "1.2.0",
+        "mocha": "2.3.4",
+        "should": "7.1.1"
+    },
+    "scripts": {
+        "test": "node_modules/.bin/mocha --reporter spec --timeout 5000"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/GitbookIO/node-analytics.git"
+    },
+    "contributors": [
+        {
+            "name": "Johan Preynat",
+            "email": "johan@gitbook.com"
+        }
+    ]
+}
