@@ -73,7 +73,6 @@ A full description for `result` can be found [here](https://github.com/GitbookIO
 #### Get aggregated analytics by countries
 
 ```JavaScript
-// Full query
 analytics.byCountries(DBNAME)
 .then(function(countries) {
     // result.list is an array of aggregated analytics
@@ -86,7 +85,6 @@ A full description for `countries` can be found [here](https://github.com/Gitboo
 #### Get aggregated analytics by platforms
 
 ```JavaScript
-// Full query
 analytics.byPlatforms(DBNAME)
 .then(function(platforms) { ... });
 ```
@@ -96,7 +94,6 @@ A full description for `platforms` can be found [here](https://github.com/Gitboo
 #### Get aggregated analytics by domains
 
 ```JavaScript
-// Full query
 analytics.byDomains(DBNAME)
 .then(function(domains) { ... });
 ```
@@ -106,7 +103,6 @@ A full description for `domains` can be found [here](https://github.com/GitbookI
 #### Get aggregated analytics by events
 
 ```JavaScript
-// Full query
 analytics.byEvents(DBNAME)
 .then(function(events) { ... });
 ```
@@ -118,13 +114,17 @@ A full description for `events` can be found [here](https://github.com/GitbookIO
 With `overTime()`, the parameter object can take an `interval` key to specify the time serie interval in seconds. By default, the service sets the interval to `86400` (which is equal to one day).
 
 ```JavaScript
+// Full query
+analytics.overTime(DBNAME)
+.then(function(timeSerie) { ... });
+
+// With parameters
 var params = {
     start: new Date(2015, 0, 1),
     end: new Date(2015, 2, 1),
     interval: 2592000 // one month
 };
 
-// Full query
 analytics.overTime(DBNAME, params)
 .then(function(timeSerie) { ... });
 ```
