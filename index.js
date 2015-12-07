@@ -1,10 +1,14 @@
 var _ = require('lodash');
 var axios = require('axios');
 var Q = require('Q');
+var querystring = require('querystring');
 var urljoin = require('urljoin.js');
 
-function Analytics(host) {
+function Analytics(host, opts) {
     this.host = host;
+    this.opts = _.defaults(opts || {}, {
+        cacheExpire: 3600
+    });
 }
 
 Analytics.prototype.queryByProperty = function(dbName, params, property) {
@@ -22,15 +26,22 @@ Analytics.prototype.queryByProperty = function(dbName, params, property) {
     });
 
     // Insert query parameters
-    var queryParams = {
+    var queryParams = _.defaults({
         start: params.start? params.start.toISOString() : null,
         end: params.end? params.end.toISOString() : null,
         interval: params.interval,
         unique: params.unique
-    };
-    var queryString = encodeQueryParams(queryParams);
+    }, {
+        cacheExpire: this.opts.cacheExpire
+    });
 
-    if (!!queryString) queryUrl += '?'+queryString;
+    if (queryParams.cacheExpire) {
+        queryParams.cache = Math.floor(Date.now() / (queryParams.cacheExpire*1000)) * queryParams.cacheExpire;
+        delete queryParams.cacheExpire;
+    }
+
+    var queryString = querystring.stringify(queryParams);
+    if (queryString) queryUrl += '?'+queryString;
 
     // GET request to µAnalytics
     axios.get(queryUrl)
@@ -123,15 +134,5 @@ Analytics.prototype.delete = function(dbName) {
 
     return d.promise;
 };
-
-function encodeQueryParams(data) {
-    return Object.keys(data)
-    .filter(function(key) {
-        return !!data[key];
-    })
-    .map(function(key) {
-        return [key, data[key]].map(encodeURIComponent).join('=');
-    }).join('&');
-}
 
 module.exports = Analytics;
