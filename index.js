@@ -1,15 +1,31 @@
 var _ = require('lodash');
 var axios = require('axios');
 var Q = require('Q');
+var querystring = require('querystring');
 var urljoin = require('urljoin.js');
 
-function Analytics(host) {
+// Normalize an axios response error
+function normError(response) {
+    var err = new Error('Error with micro-analytics request');
+    err.body = response.data;
+    throw err;
+}
+
+// Bind an axios request
+function bindResponse(q) {
+    return Q(q)
+    .get('data')
+    .fail(normError);
+}
+
+function Analytics(host, opts) {
     this.host = host;
+    this.opts = _.defaults(opts || {}, {
+        cacheExpire: 3600
+    });
 }
 
 Analytics.prototype.queryByProperty = function(dbName, params, property) {
-    var d = Q.defer();
-
     // Construct base query URL
     var queryUrl = urljoin(this.host, dbName);
     if (!!property) queryUrl = urljoin(queryUrl, property);
@@ -22,27 +38,25 @@ Analytics.prototype.queryByProperty = function(dbName, params, property) {
     });
 
     // Insert query parameters
-    var queryParams = {
+    var queryParams = _.defaults({
         start: params.start? params.start.toISOString() : null,
         end: params.end? params.end.toISOString() : null,
         interval: params.interval,
         unique: params.unique
-    };
-    var queryString = encodeQueryParams(queryParams);
-
-    if (!!queryString) queryUrl += '?'+queryString;
-
-    // GET request to µAnalytics
-    axios.get(queryUrl)
-    .then(function(response) {
-        d.resolve(response.data);
-    })
-    .catch(function(response) {
-        console.error('Error querying DB '+dbName);
-        d.reject(response.data);
+    }, {
+        cacheExpire: this.opts.cacheExpire
     });
 
-    return d.promise;
+    if (queryParams.cacheExpire) {
+        queryParams.cache = Math.floor(Date.now() / (queryParams.cacheExpire*1000)) * queryParams.cacheExpire;
+        delete queryParams.cacheExpire;
+    }
+
+    var queryString = querystring.stringify(queryParams);
+    if (queryString) queryUrl += '?'+queryString;
+
+    // GET request to µAnalytics
+    return bindResponse(axios.get(queryUrl));
 };
 
 Analytics.prototype.list = function(dbName, params) {
@@ -70,68 +84,31 @@ Analytics.prototype.overTime = function(dbName, params) {
 };
 
 Analytics.prototype.push = function(dbName, data) {
-    var d = Q.defer();
-
     // Construct base query URL
     var queryUrl = urljoin(this.host, dbName);
 
-    axios.post(queryUrl, data)
-    .then(function(response) {
-        d.resolve();
-    })
-    .catch(function(response) {
-        console.error('Error inserting analytic into DB '+dbName);
-        d.reject(response.data);
-    });
-
-    return d.promise;
+    return bindResponse(axios.post(queryUrl, data));
 };
 
 Analytics.prototype.special = function(dbName, data) {
-    var d = Q.defer();
-
     // Construct base query URL
     var queryUrl = urljoin(this.host, dbName, 'special');
 
-    axios.post(queryUrl, data)
-    .then(function(response) {
-        d.resolve();
-    })
-    .catch(function(response) {
-        console.error('Error inserting analytic into DB '+dbName);
-        console.error(response);
-        d.reject(response.data);
-    });
-
-    return d.promise;
+    return bindResponse(axios.post(queryUrl, data));
 };
 
 Analytics.prototype.delete = function(dbName) {
-    var d = Q.defer();
-
     // Construct base query URL
     var queryUrl = urljoin(this.host, dbName);
 
-    axios.delete(queryUrl)
-    .then(function(response) {
-        d.resolve();
-    })
-    .catch(function(response) {
-        console.error('Error deleting DB '+dbName);
-        d.reject(response.data);
-    });
-
-    return d.promise;
+    return bindResponse(axios.delete(queryUrl));
 };
 
-function encodeQueryParams(data) {
-    return Object.keys(data)
-    .filter(function(key) {
-        return !!data[key];
-    })
-    .map(function(key) {
-        return [key, data[key]].map(encodeURIComponent).join('=');
-    }).join('&');
-}
+Analytics.prototype.ping = function() {
+    return bindResponse(axios.get(this.host))
+    .then(function(data) {
+        if (!data.message) throw new Error('Invalid response from micro-analytics server');
+    });
+};
 
 module.exports = Analytics;
