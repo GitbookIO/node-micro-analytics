@@ -1,3 +1,4 @@
+var Q = require('q');
 var should = require('should');
 var Analytics = require('../index.js');
 var config = require('./config.json');
@@ -16,19 +17,13 @@ var intervalParams = {
 };
 
 describe('analytics.delete()', function () {
-    it('should delete a DB, wheter it exists or not', function(done) {
-        return analytics.delete(DBNAME)
-        .then(function() {
-            done();
-        }, function(err) {
-            err = err || new Error();
-            done(err);
-        });
+    it('should delete a DB, wheter it exists or not', function() {
+        return analytics.delete(DBNAME);
     });
 });
 
 describe('analytics.push()', function () {
-    it('should insert data in a new DB', function(done) {
+    it('should insert data in a new DB', function() {
         // countryCode will be 'gb', platform will be 'Mac'
         var data = {
             "ip":"212.58.244.20",
@@ -46,16 +41,10 @@ describe('analytics.push()', function () {
             }
         };
 
-        analytics.push(DBNAME, data)
-        .then(function() {
-            done();
-        }, function(err) {
-            err = err || new Error();
-            done(err);
-        });
+        return analytics.push(DBNAME, data);
     });
 
-    it('should insert data in an existing DB', function(done) {
+    it('should insert data in an existing DB', function() {
         // countryCode will be 'jp', platform will be 'Windows'
         var data = {
             "time": new Date(1950, 0, 1),
@@ -74,164 +63,113 @@ describe('analytics.push()', function () {
             }
         };
 
-        analytics.push(DBNAME, data)
-        .then(function() {
-            done();
-        }, function(err) {
-            err = err || new Error();
-            done(err);
-        });
+        return analytics.push(DBNAME, data);
     });
 });
 
 describe('analytics.list()', function () {
-    it('should return the list of all analytics in the DB', function(done) {
-        analytics.list(DBNAME)
+    it('should return the list of all analytics in the DB', function() {
+        return analytics.list(DBNAME)
         .then(function(analytics) {
             (analytics.list.length).should.be.exactly(2);
-            done();
-        }, function(err) {
-            err = err || new Error();
-            done(err);
         });
     });
 
-    it('should return the list of analytics in the DB between two dates', function(done) {
-        analytics.list(DBNAME, params)
+    it('should return the list of analytics in the DB between two dates', function() {
+        return analytics.list(DBNAME, params)
         .then(function(analytics) {
             (analytics.list.length).should.be.exactly(1);
-            done();
-        }, function(err) {
-            err = err || new Error();
-            done(err);
         });
     });
 
-    it('should fail when querying an inexistant DB', function(done) {
-        analytics.list(FAKE_DBNAME, params)
+    it('should fail when querying an inexistant DB', function() {
+        return analytics.list(FAKE_DBNAME, params)
         .then(function(analytics) {
-            e = new Error();
-            done(e);
-        }, function(err) {
-            done();
+            throw new Error();
+        }, function() {
+            return Q();
         });
     });
 });
 
 describe('analytics.byCountries()', function () {
-    it('should return aggregated analytics by countries', function(done) {
-        analytics.byCountries(DBNAME)
+    it('should return aggregated analytics by countries', function() {
+        return analytics.byCountries(DBNAME)
         .then(function(analytics) {
             (analytics.list.length).should.be.exactly(2);
-            done();
-        }, function(err) {
-            err = err || new Error();
-            done(err);
         });
     });
 
-    it('should return aggregated analytics by countries between two dates', function(done) {
-        analytics.byCountries(DBNAME, params)
+    it('should return aggregated analytics by countries between two dates', function() {
+        return analytics.byCountries(DBNAME, params)
         .then(function(analytics) {
             (analytics.list.length).should.be.exactly(1);
             (analytics.list[0]).should.containEql({ 'id': 'gb' });
-            done();
-        }, function(err) {
-            err = err || new Error();
-            done(err);
         });
     });
 });
 
 describe('analytics.byPlatforms()', function () {
-    it('should return aggregated analytics by platforms', function(done) {
-        analytics.byCountries(DBNAME)
+    it('should return aggregated analytics by platforms', function() {
+        return analytics.byCountries(DBNAME)
         .then(function(analytics) {
             (analytics.list.length).should.be.exactly(2);
-            done();
-        }, function(err) {
-            err = err || new Error();
-            done(err);
         });
     });
 
-    it('should return aggregated analytics by platforms between two dates', function(done) {
-        analytics.byPlatforms(DBNAME, params)
+    it('should return aggregated analytics by platforms between two dates', function() {
+        return analytics.byPlatforms(DBNAME, params)
         .then(function(analytics) {
             (analytics.list.length).should.be.exactly(1);
             (analytics.list[0]).should.containEql({ 'id': 'Mac' });
-            done();
-        }, function(err) {
-            err = err || new Error();
-            done(err);
         });
     });
 });
 
 describe('analytics.byDomains()', function () {
-    it('should return aggregated analytics by referer domains', function(done) {
-        analytics.byDomains(DBNAME)
+    it('should return aggregated analytics by referer domains', function() {
+        return analytics.byDomains(DBNAME)
         .then(function(analytics) {
             (analytics.list.length).should.be.exactly(2);
-            done();
-        }, function(err) {
-            err = err || new Error();
-            done(err);
         });
     });
 
-    it('should return aggregated analytics by referer domains between two dates', function(done) {
-        analytics.byDomains(DBNAME, params)
+    it('should return aggregated analytics by referer domains between two dates', function() {
+        return analytics.byDomains(DBNAME, params)
         .then(function(analytics) {
             (analytics.list.length).should.be.exactly(1);
             (analytics.list[0]).should.containEql({ 'id': 'gitbook.com' });
-            done();
-        }, function(err) {
-            err = err || new Error();
-            done(err);
         });
     });
 });
 
 describe('analytics.byEvents()', function () {
-    it('should return aggregated analytics by events', function(done) {
-        analytics.byEvents(DBNAME)
+    it('should return aggregated analytics by events', function() {
+        return analytics.byEvents(DBNAME)
         .then(function(analytics) {
             (analytics.list.length).should.be.exactly(2);
-            done();
-        }, function(err) {
-            err = err || new Error();
-            done(err);
         });
     });
 
-    it('should return aggregated analytics by events between two dates', function(done) {
-        analytics.byEvents(DBNAME, params)
+    it('should return aggregated analytics by events between two dates', function() {
+        return analytics.byEvents(DBNAME, params)
         .then(function(analytics) {
             (analytics.list.length).should.be.exactly(1);
             (analytics.list[0]).should.containEql({ 'id': 'pdf' });
-            done();
-        }, function(err) {
-            err = err || new Error();
-            done(err);
         });
     });
 });
 
 describe('analytics.overTime()', function () {
-    it('should return an analytics time serie', function(done) {
-        analytics.overTime(DBNAME)
+    it('should return an analytics time serie', function() {
+        return analytics.overTime(DBNAME)
         .then(function(analytics) {
             (analytics.list.length).should.be.exactly(2);
-            done();
-        }, function(err) {
-            err = err || new Error();
-            done(err);
         });
     });
 
-    it('should return an analytics time serie between two dates', function(done) {
-        analytics.overTime(DBNAME, params)
+    it('should return an analytics time serie between two dates', function() {
+        return analytics.overTime(DBNAME, params)
         .then(function(analytics) {
             (analytics.list.length).should.be.exactly(1);
 
@@ -240,27 +178,18 @@ describe('analytics.overTime()', function () {
             (start.getFullYear()).should.be.exactly(predictedStart.getFullYear());
             (start.getMonth()).should.be.exactly(predictedStart.getMonth());
             (start.getDate()).should.be.exactly(predictedStart.getDate());
-
-            done();
-        }, function(err) {
-            err = err || new Error();
-            done(err);
         });
     });
 
-    it('should return an analytics time serie between two dates with an interval specified', function(done) {
-        analytics.overTime(DBNAME, intervalParams)
+    it('should return an analytics time serie between two dates with an interval specified', function() {
+        return analytics.overTime(DBNAME, intervalParams)
         .then(function(analytics) {
             (analytics.list.length).should.be.exactly(1);
 
             var end = new Date(analytics.list[0].end);
             var predictedEnd = new Date(1950, 0, 1, 1);
             (end.toISOString()).should.be.exactly(predictedEnd.toISOString());
-
-            done();
-        }, function(err) {
-            err = err || new Error();
-            done(err);
         });
     });
 });
+
