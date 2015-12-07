@@ -17,14 +17,16 @@ Analytics.prototype.queryByProperty = function(dbName, params, property) {
     params = _.defaults(params || {}, {
         start: null,
         end: null,
-        interval: null
+        interval: null,
+        unique: null
     });
 
     // Insert query parameters
     var queryParams = {
         start: params.start? params.start.toISOString() : null,
         end: params.end? params.end.toISOString() : null,
-        interval: params.interval
+        interval: params.interval,
+        unique: params.unique
     };
     var queryString = encodeQueryParams(queryParams);
 
@@ -79,6 +81,25 @@ Analytics.prototype.push = function(dbName, data) {
     })
     .catch(function(response) {
         console.error('Error inserting analytic into DB '+dbName);
+        d.reject(response.data);
+    });
+
+    return d.promise;
+};
+
+Analytics.prototype.special = function(dbName, data) {
+    var d = Q.defer();
+
+    // Construct base query URL
+    var queryUrl = urljoin(this.host, dbName, 'special');
+
+    axios.post(queryUrl, data)
+    .then(function(response) {
+        d.resolve();
+    })
+    .catch(function(response) {
+        console.error('Error inserting analytic into DB '+dbName);
+        console.error(response);
         d.reject(response.data);
     });
 

@@ -1,12 +1,12 @@
 {
-    "name": "node-analytics",
-    "version": "0.0.1",
+    "name": "micro-analytics",
+    "version": "1.0.0",
     "private": false,
-    "homepage": "https://www.github.com/GitbookIO/node-analytics",
+    "homepage": "https://www.github.com/GitbookIO/node-micro-analytics",
     "description": "Node client for µAnalytics",
     "author": "GitBook Team <contact@gitbook.com>",
     "bugs": {
-        "url": "https://github.com/GitbookIO/node-analytics/issues"
+        "url": "https://github.com/GitbookIO/node-micro-analytics/issues"
     },
     "engines": {
         "node": "5.1.0",
@@ -19,7 +19,6 @@
         "urljoin.js": "0.1.0"
     },
     "devDependencies": {
-        "dotenv": "1.2.0",
         "mocha": "2.3.4",
         "should": "7.1.1"
     },
@@ -28,7 +27,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/GitbookIO/node-analytics.git"
+        "url": "https://github.com/GitbookIO/node-micro-analytics.git"
     },
     "contributors": [
         {
