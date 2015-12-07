@@ -104,4 +104,11 @@ Analytics.prototype.delete = function(dbName) {
     return bindResponse(axios.delete(queryUrl));
 };
 
+Analytics.prototype.ping = function() {
+    return bindResponse(axios.get(this.host))
+    .then(function(data) {
+        if (!data.message) throw new Error('Invalid response from micro-analytics server');
+    });
+};
+
 module.exports = Analytics;

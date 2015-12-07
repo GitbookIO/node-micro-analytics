@@ -16,6 +16,21 @@ var intervalParams = {
     "interval": 3600
 };
 
+describe('analytics.ping()', function () {
+    it('should work for micro-analytics server', function() {
+        return analytics.ping();
+    });
+
+    it('should fail for non-micro-analytics server', function() {
+        return (new Analytics('https://www.google.com')).ping()
+        .then(function(analytics) {
+            throw new Error();
+        }, function() {
+            return Q();
+        });
+    });
+});
+
 describe('analytics.delete()', function () {
     it('should delete a DB, wheter it exists or not', function() {
         return analytics.delete(DBNAME);
