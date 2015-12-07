@@ -14,8 +14,8 @@
     },
     "dependencies": {
         "axios": "0.7.0",
-        "lodash": "3.10.1",
-        "q": "1.4.1",
+        "lodash": "^3.10.1",
+        "q": "^1.4.1",
         "urljoin.js": "0.1.0"
     },
     "devDependencies": {
