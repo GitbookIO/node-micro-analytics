@@ -1,4 +1,4 @@
-# node-analytics
+# micro-analytics
 
 A small promise-based node client library for the [µAnalytics](https://github.com/GitbookIO/micro-analytics) service.
 
@@ -6,7 +6,7 @@ A small promise-based node client library for the [µAnalytics](https://github.c
 ## Install
 
 ```
-$ npm install node-analytics
+$ npm install micro-analytics
 ```
 
 
@@ -34,10 +34,37 @@ $ npm test
 To create a new client, you need to specify the µAnalytics host as a *string*.
 
 ```JavaScript
-var Analytics = require('node-analytics');
+var Analytics = require('micro-analytics');
 
 var HOST = 'http://localhost:7070';
 var analytics = new Analytics(HOST);
+```
+
+You can specify your credentials for µAnalytics basic authentication in an optional object passed as a second argument :
+
+```JavaScript
+var Analytics = require('micro-analytics');
+
+var HOST = 'http://localhost:7070';
+var opts = {
+  username: 'johan',
+  password: 'myPass'
+};
+
+var analytics = new Analytics(HOST, opts);
+```
+
+By default, the client will use a cache key renewed each hour. You can set the cache interval using the `cacheExpire` key of the optional second argument. The value is the interval in seconds.
+
+```JavaScript
+var Analytics = require('micro-analytics');
+
+var HOST = 'http://localhost:7070';
+var opts = {
+  cacheExpire: 86400 // One day
+};
+
+var analytics = new Analytics(HOST, opts);
 ```
 
 ### Get data from a database
@@ -78,6 +105,8 @@ analytics.count(DBNAME)
     ...
 });
 ```
+
+A full description for `result` can be found [here](https://github.com/GitbookIO/micro-analytics#get-websitecount).
 
 #### Get aggregated analytics by countries
 

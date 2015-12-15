@@ -1,6 +1,6 @@
 {
     "name": "micro-analytics",
-    "version": "1.0.6",
+    "version": "1.0.7",
     "private": false,
     "homepage": "https://www.github.com/GitbookIO/node-micro-analytics",
     "description": "Node client for µAnalytics",
