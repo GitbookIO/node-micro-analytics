@@ -32,14 +32,19 @@ describe('analytics.ping()', function () {
 });
 
 describe('analytics.delete()', function () {
-    it('should delete a DB, wheter it exists or not', function() {
-        return analytics.delete(DBNAME);
+    it('should fail to delete a non-existing DB', function() {
+        return analytics.delete(DBNAME)
+        .then(function () {
+            throw new Error();
+        }, function () {
+            return Q();
+        });
     });
 });
 
 describe('analytics.push()', function () {
     it('should insert data in a new DB', function() {
-        // countryCode will be 'gb', platform will be 'Mac'
+        // countryCode will be 'gb', platform will be 'Apple Mac'
         var data = {
             "ip":"212.58.244.20",
             "event":"pdf",
@@ -60,7 +65,7 @@ describe('analytics.push()', function () {
     });
 
     it('should insert data in an existing DB', function() {
-        // countryCode will be 'jp', platform will be 'Windows'
+        // countryCode will be 'jp', platform will be 'Microsoft Windows'
         var data = {
             "time": new Date(1950, 0, 1),
             "ip":"14.133.244.23",
@@ -136,7 +141,7 @@ describe('analytics.byPlatforms()', function () {
         return analytics.byPlatforms(DBNAME, params)
         .then(function(analytics) {
             (analytics.list.length).should.be.exactly(1);
-            (analytics.list[0]).should.containEql({ 'id': 'Mac' });
+            (analytics.list[0]).should.containEql({ 'id': 'Apple Mac' });
         });
     });
 });
@@ -208,3 +213,13 @@ describe('analytics.overTime()', function () {
     });
 });
 
+describe('analytics.delete()', function () {
+    it('should delete an existing DB', function() {
+        return analytics.delete(DBNAME)
+        .then(function () {
+            return Q();
+        }, function () {
+            throw new Error();
+        });
+    });
+});

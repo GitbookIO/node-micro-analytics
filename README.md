@@ -1,6 +1,6 @@
 # node-analytics
 
-A small promise-based node client library for the [µAnalytics](https://github.com/GitbookIO/analytics) service.
+A small promise-based node client library for the [µAnalytics](https://github.com/GitbookIO/micro-analytics) service.
 
 
 ## Install
@@ -67,8 +67,17 @@ analytics.list(DBNAME, params)
 .then(function(result) { ... });
 ```
 
-A full description for `result` can be found [here](https://github.com/GitbookIO/analytics#get-website).
+A full description for `result` can be found [here](https://github.com/GitbookIO/micro-analytics#get-website).
 
+#### Get the count of analytics
+
+```JavaScript
+analytics.count(DBNAME)
+.then(function(result) {
+    // result looks like { total: 300, unique: 150 }
+    ...
+});
+```
 
 #### Get aggregated analytics by countries
 
@@ -80,7 +89,7 @@ analytics.byCountries(DBNAME)
 });
 ```
 
-A full description for `countries` can be found [here](https://github.com/GitbookIO/analytics#get-websitecountries).
+A full description for `countries` can be found [here](https://github.com/GitbookIO/micro-analytics#get-websitecountries).
 
 #### Get aggregated analytics by platforms
 
@@ -89,7 +98,7 @@ analytics.byPlatforms(DBNAME)
 .then(function(platforms) { ... });
 ```
 
-A full description for `platforms` can be found [here](https://github.com/GitbookIO/analytics#get-websiteplatforms).
+A full description for `platforms` can be found [here](https://github.com/GitbookIO/micro-analytics#get-websiteplatforms).
 
 #### Get aggregated analytics by domains
 
@@ -98,7 +107,7 @@ analytics.byDomains(DBNAME)
 .then(function(domains) { ... });
 ```
 
-A full description for `domains` can be found [here](https://github.com/GitbookIO/analytics#get-websitedomains).
+A full description for `domains` can be found [here](https://github.com/GitbookIO/micro-analytics#get-websitedomains).
 
 #### Get aggregated analytics by events
 
@@ -107,7 +116,7 @@ analytics.byEvents(DBNAME)
 .then(function(events) { ... });
 ```
 
-A full description for `events` can be found [here](https://github.com/GitbookIO/analytics#get-websiteevents).
+A full description for `events` can be found [here](https://github.com/GitbookIO/micro-analytics#get-websiteevents).
 
 #### Get aggregated analytics as a time serie
 
@@ -129,17 +138,19 @@ analytics.overTime(DBNAME, params)
 .then(function(timeSerie) { ... });
 ```
 
-A full description for `timeSerie` can be found [here](https://github.com/GitbookIO/analytics#get-websitetime).
+A full description for `timeSerie` can be found [here](https://github.com/GitbookIO/micro-analytics#get-websitetime).
 
 
 ### Insert data in a database
 
+#### Simple insert
+
 ```JavaScript
 var data = {
     "time": new Date(), // optional
-    "ip":"127.0.0.1",
-    "event":"download",
-    "path":"/somewhere",
+    "ip": "127.0.0.1",
+    "event": "download",
+    "path": "/somewhere",
     "headers": {
         "referer": "http://gitbook.com",
         "user-agent": "...",
@@ -151,6 +162,74 @@ analytics.push(DBNAME, data)
 .then(function() { ... });
 ```
 
+#### Bulk insert
+
+If you need to push a list of existing analytics, use this method:
+
+```JavaScript
+var data = {
+    "list": [
+        {
+            "time": 1450098642,
+            "ip": "127.0.0.1",
+            "event": "download",
+            "path": "/somewhere",
+            "platform": "Apple Mac",
+            "refererDomain": "www.gitbook.com",
+            "countryCode": "fr"
+        },
+        {
+            "time": 0,
+            "ip": "127.0.0.1",
+            "event": "login",
+            "path": "/someplace",
+            "platform": "Linux",
+            "refererDomain": "www.gitbook.com",
+            "countryCode": "us"
+        }
+    ]
+};
+
+analytics.bulk(DBNAME, data)
+.then(function() { ... });
+```
+
+The passed `time` value must be a Unix timestamp in sec.
+The `countryCode` will be reprocessed by the service based on the `ip`.
+
+#### Multi-website bulk insert
+
+If you need to push analytics for different websites, you can use:
+
+```JavaScript
+var data = {
+    "list": [
+        {
+            "website": "website-1.com",
+            "time": 1450098642,
+            "ip": "127.0.0.1",
+            "event": "download",
+            "path": "/somewhere",
+            "platform": "Apple Mac",
+            "refererDomain": "www.gitbook.com",
+            "countryCode": "fr"
+        },
+        {
+            "website": "website-2.com",
+            "time": 0,
+            "ip": "127.0.0.1",
+            "event": "login",
+            "path": "/someplace",
+            "platform": "Linux",
+            "refererDomain": "www.gitbook.com",
+            "countryCode": "us"
+        }
+    ]
+};
+
+analytics.bulkMulti(DBNAME, data)
+.then(function() { ... });
+```
 
 ### Delete a database
 
