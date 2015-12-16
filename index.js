@@ -1,6 +1,7 @@
 var _ = require('lodash');
 var axios = require('axios');
 var Q = require('q');
+var url = require('url');
 var querystring = require('querystring');
 var urljoin = require('urljoin.js');
 
@@ -22,14 +23,20 @@ function Analytics(host, opts) {
     if (!host || !_.isString(host)) {
         throw new Error("First argument for micro-analytics is mandatory and should be a string");
     }
-    this.host = host;
 
-    // Set default cache
+    this.host = host;
     this.opts = _.defaults(opts || {}, {
         cacheExpire: 3600,
         username: null,
         password: null
     });
+
+    var parsed = url.parse(host);
+    if (parsed.auth) {
+        var authParse = parsed.auth.split(':');
+        this.opts.username = this.opts.username || authParse[0];
+        this.opts.password = this.opts.password || authParse[1];
+    }
 
     // Configure axios with basic auth
     if (!!this.opts.username) {
