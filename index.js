@@ -6,7 +6,7 @@ var querystring = require('querystring');
 
 // Normalize an axios response error
 function normError(response) {
-    var err = new Error('Error with micro-analytics request');
+    var err = new Error(response.data.message || 'Error with micro-analytics request');
     err.body = response.data;
     throw err;
 }
