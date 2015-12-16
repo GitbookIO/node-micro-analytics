@@ -3,7 +3,6 @@ var axios = require('axios');
 var Q = require('q');
 var url = require('url');
 var querystring = require('querystring');
-var urljoin = require('urljoin.js');
 
 // Normalize an axios response error
 function normError(response) {
@@ -51,8 +50,8 @@ function Analytics(host, opts) {
 
 Analytics.prototype.queryByProperty = function(dbName, params, property) {
     // Construct base query URL
-    var queryUrl = urljoin(this.host, dbName);
-    if (!!property) queryUrl = urljoin(queryUrl, property);
+    var queryUrl = url.resolve(this.host, dbName);
+    if (!!property) queryUrl = url.resolve(queryUrl, property);
 
     params = _.defaults(params || {}, {
         start: null,
