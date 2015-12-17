@@ -114,28 +114,28 @@ Analytics.prototype.count = function(dbName, params) {
 
 Analytics.prototype.push = function(dbName, data) {
     // Construct base query URL
-    var queryUrl = urljoin(this.host, dbName);
+    var queryUrl = url.resolve(this.host, dbName);
 
     return bindResponse(axios.post(queryUrl, data));
 };
 
 Analytics.prototype.bulk = function(dbName, data) {
     // Construct base query URL
-    var queryUrl = urljoin(this.host, dbName, 'bulk');
+    var queryUrl = url.resolve(this.host, dbName, 'bulk');
 
     return bindResponse(axios.post(queryUrl, data));
 };
 
 Analytics.prototype.bulkMulti = function(data) {
     // Construct base query URL
-    var queryUrl = urljoin(this.host, 'bulk');
+    var queryUrl = url.resolve(this.host, 'bulk');
 
     return bindResponse(axios.post(queryUrl, data));
 };
 
 Analytics.prototype.delete = function(dbName) {
     // Construct base query URL
-    var queryUrl = urljoin(this.host, dbName);
+    var queryUrl = url.resolve(this.host, dbName);
 
     return bindResponse(axios.delete(queryUrl));
 };
