@@ -1,7 +1,7 @@
 var _ = require('lodash');
 var axios = require('axios');
 var Q = require('q');
-var url = require('url');
+var urljoin = require('urljoin.js');
 var querystring = require('querystring');
 
 // Normalize an axios response error
@@ -50,8 +50,8 @@ function Analytics(host, opts) {
 
 Analytics.prototype.queryByProperty = function(dbName, params, property) {
     // Construct base query URL
-    var queryUrl = url.resolve(this.host, dbName);
-    if (!!property) queryUrl = url.resolve(queryUrl, dbName, property);
+    var queryUrl = urljoin(this.host, dbName);
+    if (!!property) queryUrl = urljoin(queryUrl, dbName, property);
 
     params = _.defaults(params || {}, {
         start: null,
@@ -114,28 +114,28 @@ Analytics.prototype.count = function(dbName, params) {
 
 Analytics.prototype.push = function(dbName, data) {
     // Construct base query URL
-    var queryUrl = url.resolve(this.host, dbName);
+    var queryUrl = urljoin(this.host, dbName);
 
     return bindResponse(axios.post(queryUrl, data));
 };
 
 Analytics.prototype.bulk = function(dbName, data) {
     // Construct base query URL
-    var queryUrl = url.resolve(this.host, dbName, 'bulk');
+    var queryUrl = urljoin(this.host, dbName, 'bulk');
 
     return bindResponse(axios.post(queryUrl, data));
 };
 
 Analytics.prototype.bulkMulti = function(data) {
     // Construct base query URL
-    var queryUrl = url.resolve(this.host, 'bulk');
+    var queryUrl = urljoin(this.host, 'bulk');
 
     return bindResponse(axios.post(queryUrl, data));
 };
 
 Analytics.prototype.delete = function(dbName) {
     // Construct base query URL
-    var queryUrl = url.resolve(this.host, dbName);
+    var queryUrl = urljoin(this.host, dbName);
 
     return bindResponse(axios.delete(queryUrl));
 };
