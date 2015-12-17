@@ -1,6 +1,7 @@
 var _ = require('lodash');
 var axios = require('axios');
 var Q = require('q');
+var url = require('url');
 var urljoin = require('urljoin.js');
 var querystring = require('querystring');
 
