@@ -52,7 +52,7 @@ function Analytics(host, opts) {
 Analytics.prototype.queryByProperty = function(dbName, params, property) {
     // Construct base query URL
     var queryUrl = urljoin(this.host, dbName);
-    if (!!property) queryUrl = urljoin(queryUrl, dbName, property);
+    if (!!property) queryUrl = urljoin(queryUrl, property);
 
     params = _.defaults(params || {}, {
         start: null,
