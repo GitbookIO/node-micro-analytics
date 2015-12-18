@@ -13,7 +13,7 @@
         "npm": "3.4.1"
     },
     "dependencies": {
-        "axios": "0.8.1",
+        "request": "2.67.0",
         "lodash": "^3.10.1",
         "urljoin.js": "0.1.0",
         "q": "^1.4.1"
@@ -23,7 +23,7 @@
         "should": "7.1.1"
     },
     "scripts": {
-        "test": "node_modules/.bin/mocha --reporter spec --timeout 5000"
+        "test": "node_modules/.bin/mocha -b --reporter spec --timeout 5000"
     },
     "repository": {
         "type": "git",

@@ -1,5 +1,5 @@
 var _ = require('lodash');
-var axios = require('axios');
+var request = require('request');
 var Q = require('q');
 var url = require('url');
 var urljoin = require('urljoin.js');
@@ -7,11 +7,11 @@ var querystring = require('querystring');
 
 // Normalize an axios response error
 function normError(response) {
-    var data = response.data || {};
+    var data = response.body || {};
     var err = new Error(data.message || 'Error with micro-analytics request');
     err.body = data;
     err.code = data.code;
-    throw err;
+    return err;
 }
 
 // Bind an axios request
@@ -40,20 +40,49 @@ function Analytics(host, opts) {
         this.opts.password = this.opts.password || authParse[1];
     }
 
-    // Configure axios with basic auth
+    var requestOpts = {};
+
     if (!!this.opts.username) {
-        axios = axios.create({
-            auth: {
-                username: this.opts.username,
-                password: this.opts.password
-            }
-        });
+        requestOpts.auth = {
+            'user': this.opts.username,
+            'pass': this.opts.password,
+            'sendImmediately': true
+        };
     }
+
+    this.request = request.defaults(requestOpts)
 }
+
+Analytics.prototype.req = function(httpMethod, method, body) {
+    var d = Q.defer();
+    var uri = urljoin(this.host, method);
+    httpMethod = httpMethod.toUpperCase();
+
+    if (httpMethod == 'GET' && body) {
+        var queryString = querystring.stringify(body);
+        if (queryString) uri += '?'+queryString;
+        body = undefined;
+    }
+
+    this.request({
+        uri: uri,
+        json: true,
+        method: httpMethod,
+        body: body
+    }, function(err, res, data) {
+        if (res.statusCode == 200) return d.resolve(data);
+
+        if (!err) err = normError(res);
+        d.reject(err);
+    })
+
+
+    return d.promise;
+};
 
 Analytics.prototype.queryByProperty = function(dbName, params, property) {
     // Construct base query URL
-    var queryUrl = urljoin(this.host, dbName);
+    var queryUrl = dbName;
     if (!!property) queryUrl = urljoin(queryUrl, property);
 
     params = _.defaults(params || {}, {
@@ -80,11 +109,8 @@ Analytics.prototype.queryByProperty = function(dbName, params, property) {
 
     queryParams = _.pick(queryParams, function(value) { return !!value; });
 
-    var queryString = querystring.stringify(queryParams);
-    if (queryString) queryUrl += '?'+queryString;
-
     // GET request to µAnalytics
-    return bindResponse(axios.get(queryUrl));
+    return this.req('get', queryUrl, queryParams);
 };
 
 Analytics.prototype.list = function(dbName, params) {
@@ -116,35 +142,25 @@ Analytics.prototype.count = function(dbName, params) {
 };
 
 Analytics.prototype.push = function(dbName, data) {
-    // Construct base query URL
-    var queryUrl = urljoin(this.host, dbName);
-
-    return bindResponse(axios.post(queryUrl, data));
+    return this.req('post', dbName, data);
 };
 
 Analytics.prototype.bulk = function(dbName, data) {
-    // Construct base query URL
-    var queryUrl = urljoin(this.host, dbName, 'bulk');
+    var queryUrl = urljoin(dbName, 'bulk');
 
-    return bindResponse(axios.post(queryUrl, data));
+    return this.req('post', queryUrl, data);
 };
 
 Analytics.prototype.bulkMulti = function(data) {
-    // Construct base query URL
-    var queryUrl = urljoin(this.host, 'bulk');
-
-    return bindResponse(axios.post(queryUrl, data));
+    return this.req('post', 'bulk', data);
 };
 
 Analytics.prototype.delete = function(dbName) {
-    // Construct base query URL
-    var queryUrl = urljoin(this.host, dbName);
-
-    return bindResponse(axios.delete(queryUrl));
+    return this.req('delete', dbName);
 };
 
 Analytics.prototype.ping = function() {
-    return bindResponse(axios.get(this.host))
+    return this.req('get', '/')
     .then(function(data) {
         if (!data.message) throw new Error('Invalid response from micro-analytics server');
     });
