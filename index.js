@@ -14,13 +14,6 @@ function normError(response) {
     return err;
 }
 
-// Bind an axios request
-function bindResponse(q) {
-    return Q(q)
-    .get('data')
-    .fail(normError);
-}
-
 function Analytics(host, opts) {
     if (!host || !_.isString(host)) {
         throw new Error("First argument for micro-analytics is mandatory and should be a string");
