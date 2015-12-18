@@ -44,8 +44,8 @@ function Analytics(host, opts) {
     if (!!this.opts.username) {
         axios = axios.create({
             auth: {
-                username: opts.username,
-                password: opts.password
+                username: this.opts.username,
+                password: this.opts.password
             }
         });
     }
