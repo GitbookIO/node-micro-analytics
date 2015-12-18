@@ -59,8 +59,7 @@ Analytics.prototype.req = function(httpMethod, method, body) {
     httpMethod = httpMethod.toUpperCase();
 
     if (httpMethod == 'GET' && body) {
-        var queryString = querystring.stringify(body);
-        if (queryString) uri += '?'+queryString;
+        uri += '?'+querystring.stringify(body);
         body = undefined;
     }
 
@@ -70,8 +69,8 @@ Analytics.prototype.req = function(httpMethod, method, body) {
         method: httpMethod,
         body: body
     }, function(err, res, data) {
-        if (res.statusCode == 200) return d.resolve(data);
-
+        var ok = !err && res && Math.floor(res.statusCode/200) === 1;
+        if (ok) return d.resolve(data);
         if (!err) err = normError(res);
         d.reject(err);
     })
