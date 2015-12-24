@@ -1,10 +1,11 @@
 {
     "name": "micro-analytics",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "private": false,
     "homepage": "https://www.github.com/GitbookIO/node-micro-analytics",
     "description": "Node client for µAnalytics",
     "author": "GitBook Team <contact@gitbook.com>",
+    "license": "Apache-2.0",
     "bugs": {
         "url": "https://github.com/GitbookIO/node-micro-analytics/issues"
     },
