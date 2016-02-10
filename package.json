@@ -1,7 +1,7 @@
 {
     "name": "micro-analytics",
     "version": "1.2.1",
-    "private": false,
+    "main": "./lib/index.js",
     "homepage": "https://www.github.com/GitbookIO/node-micro-analytics",
     "description": "Node client for µAnalytics",
     "author": "GitBook Team <contact@gitbook.com>",
