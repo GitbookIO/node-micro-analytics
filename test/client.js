@@ -1,6 +1,6 @@
 var Q = require('q');
 var should = require('should');
-var Analytics = require('../index.js');
+var Analytics = require('../lib/index.js');
 var config = require('./config.json');
 
 var analytics = new Analytics(config.HOST);
