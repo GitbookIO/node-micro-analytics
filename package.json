@@ -9,10 +9,6 @@
     "bugs": {
         "url": "https://github.com/GitbookIO/node-micro-analytics/issues"
     },
-    "engines": {
-        "node": "5.1.0",
-        "npm": "3.4.1"
-    },
     "dependencies": {
         "request": "2.67.0",
         "lodash": "^3.10.1",
